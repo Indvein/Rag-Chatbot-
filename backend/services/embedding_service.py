@@ -2,13 +2,13 @@ import os
 
 # These must be set before importing torch/sentence-transformers so native
 # math libraries do not fan out across every CPU core for small requests.
-os.environ.setdefault("OMP_NUM_THREADS", "2")
-os.environ.setdefault("MKL_NUM_THREADS", "2")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 import torch
 from sentence_transformers import SentenceTransformer
 
-torch.set_num_threads(2)
+torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
 
 class EmbeddingService:
