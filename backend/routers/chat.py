@@ -28,7 +28,9 @@ def chat_with_bot(
     request: ChatRequest, 
     req: Request,
     db: Session = Depends(get_db),
-    x_api_key: Optional[str] = Header(None)
+    x_api_key: Optional[str] = Header(None),
+    x_ai_provider: Optional[str] = Header(None),
+    x_ai_model: Optional[str] = Header(None)
 ):
     try:
         is_trial = not x_api_key
@@ -48,7 +50,9 @@ def chat_with_bot(
             context=context,
             history=request.history,
             language=request.language,
-            api_key=x_api_key
+            api_key=x_api_key,
+            ai_provider=x_ai_provider,
+            ai_model=x_ai_model
         )
         
         tokens = response_data.get("tokens_used", 0)

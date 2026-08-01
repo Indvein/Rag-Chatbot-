@@ -1,13 +1,29 @@
 import React, { useState } from 'react';
-import { KeyRound, Sparkles, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
+import { KeyRound, Sparkles, ShieldCheck, ArrowRight, Globe } from 'lucide-react';
 
 interface OnboardingModalProps {
-  onSaveKey: (key: string) => void;
+  onSaveKey: (key: string, provider: string, model: string) => void;
   onStartTrial: () => void;
 }
 
+const PROVIDERS = [
+  { id: 'groq', name: 'Groq', defaultModel: 'llama-3.1-8b-instant', placeholder: 'gsk_...' },
+  { id: 'openai', name: 'OpenAI', defaultModel: 'gpt-4o-mini', placeholder: 'sk-proj-...' },
+  { id: 'anthropic', name: 'Anthropic', defaultModel: 'claude-3-haiku-20240307', placeholder: 'sk-ant-...' },
+  { id: 'gemini', name: 'Google Gemini', defaultModel: 'gemini-1.5-flash', placeholder: 'AIza...' },
+];
+
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTrial }) => {
+  const [providerId, setProviderId] = useState('groq');
   const [inputKey, setInputKey] = useState('');
+
+  const selectedProvider = PROVIDERS.find(p => p.id === providerId) || PROVIDERS[0];
+
+  const handleConnect = () => {
+    if (inputKey.trim()) {
+      onSaveKey(inputKey.trim(), selectedProvider.id, selectedProvider.defaultModel);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -32,10 +48,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               </div>
             </div>
             <div className="flex gap-4">
-              <Zap className="text-accent shrink-0 mt-1" size={24} />
+              <Globe className="text-accent shrink-0 mt-1" size={24} />
               <div>
-                <h3 className="font-semibold text-text-main">Lightning Fast Llama 3.1</h3>
-                <p className="text-sm text-text-muted mt-1">Powered by Groq's LPUs, delivering instant responses and deep document comprehension.</p>
+                <h3 className="font-semibold text-text-main">Universal API Support</h3>
+                <p className="text-sm text-text-muted mt-1">Bring your own key! Powered by a dynamic routing engine, this workspace seamlessly supports OpenAI, Google Gemini, Anthropic, and Groq.</p>
               </div>
             </div>
           </div>
@@ -45,23 +61,36 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               <KeyRound size={18} className="text-text-muted" /> Bring Your Own Key
             </h3>
             <p className="text-xs text-text-muted mb-4">
-              To use the Workspace, securely enter your Groq API key. It is stored locally in your browser and never sent to our database.
+              Securely enter your API key to connect to your favorite provider. It is stored locally in your browser and never sent to our database.
             </p>
-            <div className="flex gap-3">
-              <input 
-                type="password"
-                placeholder="gsk_..."
-                value={inputKey}
-                onChange={(e) => setInputKey(e.target.value)}
-                className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-              />
-              <button 
-                onClick={() => onSaveKey(inputKey)}
-                disabled={!inputKey.trim()}
-                className="bg-accent text-accent-text font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2"
+            
+            <div className="flex flex-col gap-3">
+              <select 
+                value={providerId}
+                onChange={(e) => setProviderId(e.target.value)}
+                className="w-full bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
-                Connect <ArrowRight size={16} />
-              </button>
+                {PROVIDERS.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} ({p.defaultModel})</option>
+                ))}
+              </select>
+              
+              <div className="flex gap-3">
+                <input 
+                  type="password"
+                  placeholder={selectedProvider.placeholder}
+                  value={inputKey}
+                  onChange={(e) => setInputKey(e.target.value)}
+                  className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                />
+                <button 
+                  onClick={handleConnect}
+                  disabled={!inputKey.trim()}
+                  className="bg-accent text-accent-text font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2"
+                >
+                  Connect <ArrowRight size={16} />
+                </button>
+              </div>
             </div>
           </div>
           
@@ -71,7 +100,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               onClick={onStartTrial}
               className="text-text-main font-semibold hover:text-accent transition-colors underline underline-offset-4"
             >
-              Start 5K Token Free Trial
+              Start 5K Token Free Trial (Groq)
             </button>
           </div>
         </div>

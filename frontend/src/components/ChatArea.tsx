@@ -10,9 +10,11 @@ interface ChatAreaProps {
   setTotalTokens: React.Dispatch<React.SetStateAction<number>>;
   language: string;
   apiKey: string | null;
+  aiProvider: string | null;
+  aiModel: string | null;
 }
 
-const ChatArea: React.FC<ChatAreaProps> = ({ messages, setMessages, setTotalTokens, language, apiKey }) => {
+const ChatArea: React.FC<ChatAreaProps> = ({ messages, setMessages, setTotalTokens, language, apiKey, aiProvider, aiModel }) => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
@@ -72,6 +74,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({ messages, setMessages, setTotalToke
       };
       if (apiKey) {
         headers['X-API-Key'] = apiKey;
+        if (aiProvider) headers['X-AI-Provider'] = aiProvider;
+        if (aiModel) headers['X-AI-Model'] = aiModel;
       }
       
       const response = await fetch('http://localhost:8000/api/chat/', {

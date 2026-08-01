@@ -1,5 +1,5 @@
 import os
-from groq import Groq
+import litellm
 from dotenv import load_dotenv
 from typing import List, Dict
 
@@ -10,17 +10,19 @@ API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
 class LLMService:
     def __init__(self):
         self.default_api_key = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
-        self.model = "llama-3.1-8b-instant"
+        self.default_model = "groq/llama-3.1-8b-instant"
 
-    def generate_answer(self, query: str, context: str, history: List[Dict[str, str]] = None, language: str = "English", api_key: str = None) -> Dict:
+    def generate_answer(self, query: str, context: str, history: List[Dict[str, str]] = None, language: str = "English", api_key: str = None, ai_provider: str = None, ai_model: str = None) -> Dict:
         """
         Generates an answer using the provided context and conversation history.
         """
+        is_trial = not api_key
         client_key = api_key if api_key else self.default_api_key
         if not client_key:
             return {"answer": "No API Key provided or configured on the server.", "tokens_used": 0}
             
-        client = Groq(api_key=client_key)
+        # Format the model string for litellm (e.g. "openai/gpt-4o", "gemini/gemini-1.5-pro")
+        model_str = f"{ai_provider}/{ai_model}" if ai_provider and ai_model and not is_trial else self.default_model
         
         if history is None:
             history = []
@@ -52,14 +54,15 @@ Context:
         messages.append({"role": "user", "content": query})
 
         try:
-            chat_completion = client.chat.completions.create(
+            response = litellm.completion(
+                model=model_str,
                 messages=messages,
-                model=self.model,
+                api_key=client_key,
                 max_tokens=512,
             )
             return {
-                "answer": chat_completion.choices[0].message.content,
-                "tokens_used": chat_completion.usage.total_tokens if chat_completion.usage else 0
+                "answer": response.choices[0].message.content,
+                "tokens_used": response.usage.total_tokens if response.usage else 0
             }
         except Exception as e:
             return {

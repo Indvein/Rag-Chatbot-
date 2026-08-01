@@ -1,56 +1,47 @@
-# 🚀 Enterprise AI Workspace
+# Enterprise AI Workspace
 
 <img src="frontend/public/image.png" width="400" alt="Enterprise Workspace AI" />
 
-## 📖 The Story & Use Case
+## The Story & Use Case
 
-This project was built to solve a real-world problem: **Information Accessibility**. 
+This project addresses the challenge of information accessibility. Legal contracts, academic papers, and financial reports are often difficult to understand due to dense jargon and language barriers.
 
-Every day, people are confronted with incredibly dense, complex PDF documents—legal contracts, medical research, academic papers, and financial reports. For many, language barriers and technical jargon make these documents impossible to understand.
+The AI Workspace is an Enterprise-grade RAG (Retrieval-Augmented Generation) application built to break down these barriers:
+- Extracts and indexes text from complex PDF documents.
+- Performs vector similarity search to find precise context.
+- Translates and summarizes answers into English, Hindi, or Hinglish.
+- Integrates browser-native Text-to-Speech (TTS) for audio accessibility.
 
-**The AI Workspace** is an Enterprise-grade RAG (Retrieval-Augmented Generation) tool that completely breaks down these barriers. By leveraging advanced vector similarity search, it allows users to upload any PDF and instantly chat with it. More importantly, it features native **Multilingual Support and Voice Synthesis**, translating complex documents into simple **English, Hindi, or Hinglish** and reading them aloud. 
+## Features
 
-It is designed to be an accessible, lightning-fast educational companion for anyone in the world.
+- **Universal API Architecture**: Integrates `litellm` for dynamic AI provider routing. Users can bring their own API keys to connect with OpenAI, Anthropic, Google Gemini, or Groq.
+- **Enterprise RAG System**: Utilizes `sentence-transformers` for intelligent chunking and Supabase `pgvector` for scalable semantic similarity search.
+- **Multilingual Support & Voice Synthesis**: Automatically translates complex document answers and reads them aloud.
+- **Transparent Citations**: Mitigates AI hallucinations by providing strict source tracking. Users can hover over citations to view the exact raw text extracted from the source PDF.
+- **SaaS Onboarding & Trial**: Implements an IP-based token tracking system, offering a built-in 5,000 token free trial before requiring a custom API key.
 
----
+## The Global Knowledge Base (Test Subject)
 
-## ✨ Features
+The live deployment operates as a Global Shared Knowledge Base to serve as a demonstrative test subject.
+- Documents uploaded to the workspace are indexed in the central Supabase vector store.
+- Visitors can query the AI against existing documents without uploading their own.
+- Visitors can upload new documents or delete existing ones to curate the workspace environment.
 
-- 🧠 **Lightning Fast Llama 3.1**: Powered by Groq's LPUs, delivering near-instant AI responses and deep document comprehension.
-- 📚 **Enterprise RAG Architecture**: Uses `sentence-transformers` for intelligent document chunking and **Supabase `pgvector`** for semantic similarity search.
-- 🌐 **Multilingual & Voice-Enabled**: Instantly translates answers into Hindi or Hinglish, complete with browser-native Text-to-Speech (TTS) to read answers aloud.
-- 🔒 **BYOK SaaS Onboarding**: Features a true SaaS "Bring Your Own Key" architecture. Users can securely plug in their own Groq API keys, or utilize the built-in **5,000 Token IP-based Free Trial**!
-- 🔗 **Transparent Citations**: AI hallucinations are mitigated through strict source tracking. Hover over any citation pill to view the exact, raw text extracted from the PDF.
-- 🎨 **Stunning UI**: Built with React, TailwindCSS, and `shadcn/ui` components for a premium, responsive, and glassmorphism-inspired aesthetic.
-
----
-
-## 🧪 The "Global Brain" Test Subject
-
-The live deployment of this application currently operates as a **Global Shared Knowledge Base**. 
-
-When you upload a document, it is added to the central Supabase vector store. This allows anyone visiting the site to immediately test the AI without needing to upload their own files! You can ask the AI about any of the existing documents in the workspace, upload your own to teach the AI something new, or use the delete button to manage and curate the workspace.
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend:**
 - FastAPI (Python)
 - SQLAlchemy + Alembic
 - Supabase (PostgreSQL + pgvector)
-- Groq Cloud API (Llama 3.1)
-- PyPDF & Sentence-Transformers (`all-MiniLM-L6-v2`)
+- LiteLLM (Universal LLM Routing)
+- PyPDF & Sentence-Transformers
 
 **Frontend:**
 - React 18 + Vite
 - TypeScript
-- Tailwind CSS + `shadcn/ui`
-- React Markdown
+- Tailwind CSS + shadcn/ui
 
----
-
-## 💻 Run it Locally
+## Run it Locally
 
 ### 1. Backend Setup
 ```bash
@@ -59,12 +50,14 @@ python -m venv venv
 source venv/Scripts/activate  # On Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
 Create a `.env` file in the `backend/` directory:
 ```env
 DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT].supabase.co:5432/postgres
 GROQ_API_KEY=gsk_your_groq_key_here
 ```
-Initialize the Database & Run:
+
+Initialize the database and run the server:
 ```bash
 python init_db.py
 uvicorn main:app --reload
@@ -77,4 +70,4 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser and enjoy the workspace!
+Navigate to `http://localhost:5173` in your browser.
