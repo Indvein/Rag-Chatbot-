@@ -80,8 +80,8 @@ Context:
                     "answer": response.choices[0].message.content,
                     "tokens_used": response.usage.total_tokens if response.usage else 0
                 }
-            except (litellm.NotFoundError, litellm.BadRequestError) as e:
-                # Model not available, try the next one in the chain
+            except (litellm.NotFoundError, litellm.BadRequestError, litellm.RateLimitError) as e:
+                # Model not available or rate limited, try the next one in the chain
                 last_error = e
                 continue
             except Exception as e:
