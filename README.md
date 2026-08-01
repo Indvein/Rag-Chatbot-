@@ -1,6 +1,6 @@
 # 🚀 Enterprise AI Workspace
 
-![Banner](https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&auto=format&fit=crop&q=80)
+<img src="frontend/public/image.png" width="400" alt="Enterprise Workspace AI" />
 
 ## 📖 The Story & Use Case
 
