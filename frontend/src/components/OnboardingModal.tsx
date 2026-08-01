@@ -16,12 +16,22 @@ const PROVIDERS = [
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTrial }) => {
   const [providerId, setProviderId] = useState('groq');
   const [inputKey, setInputKey] = useState('');
+  const [inputModel, setInputModel] = useState(PROVIDERS[0].defaultModel);
 
   const selectedProvider = PROVIDERS.find(p => p.id === providerId) || PROVIDERS[0];
 
+  const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newId = e.target.value;
+    setProviderId(newId);
+    const newProvider = PROVIDERS.find(p => p.id === newId);
+    if (newProvider) {
+      setInputModel(newProvider.defaultModel);
+    }
+  };
+
   const handleConnect = () => {
-    if (inputKey.trim()) {
-      onSaveKey(inputKey.trim(), selectedProvider.id, selectedProvider.defaultModel);
+    if (inputKey.trim() && inputModel.trim()) {
+      onSaveKey(inputKey.trim(), selectedProvider.id, inputModel.trim());
     }
   };
 
@@ -65,15 +75,24 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
             </p>
             
             <div className="flex flex-col gap-3">
-              <select 
-                value={providerId}
-                onChange={(e) => setProviderId(e.target.value)}
-                className="w-full bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-              >
-                {PROVIDERS.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.defaultModel})</option>
-                ))}
-              </select>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <select 
+                  value={providerId}
+                  onChange={handleProviderChange}
+                  className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                >
+                  {PROVIDERS.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+                <input 
+                  type="text"
+                  placeholder="Model Name (e.g. gpt-4o)"
+                  value={inputModel}
+                  onChange={(e) => setInputModel(e.target.value)}
+                  className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                />
+              </div>
               
               <div className="flex gap-3">
                 <input 
@@ -85,7 +104,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
                 />
                 <button 
                   onClick={handleConnect}
-                  disabled={!inputKey.trim()}
+                  disabled={!inputKey.trim() || !inputModel.trim()}
                   className="bg-accent text-accent-text font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2"
                 >
                   Connect <ArrowRight size={16} />
