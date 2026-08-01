@@ -8,10 +8,11 @@ load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
 
 # Fallback chains per provider: try first model, if it fails (404/not found), try the next
+# Verified model names (August 2026) - fallback chains per provider
 PROVIDER_MODEL_CHAINS = {
-    'groq': ['groq/llama-3.1-8b-instant', 'groq/llama3-8b-8192', 'groq/mixtral-8x7b-32768'],
+    'groq': ['groq/llama-3.3-70b-versatile', 'groq/llama-3.1-8b-instant', 'groq/mixtral-8x7b-32768'],
     'openai': ['openai/gpt-4o-mini', 'openai/gpt-3.5-turbo'],
-    'anthropic': ['anthropic/claude-3-haiku-20240307', 'anthropic/claude-3-5-haiku-latest'],
+    'anthropic': ['anthropic/claude-haiku-4-5', 'anthropic/claude-sonnet-5'],
     'gemini': ['gemini/gemini-2.5-flash', 'gemini/gemini-2.5-flash-lite', 'gemini/gemini-2.0-flash', 'gemini/gemini-2.0-flash-lite'],
 }
 
