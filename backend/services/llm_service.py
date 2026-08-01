@@ -12,7 +12,7 @@ PROVIDER_MODEL_CHAINS = {
     'groq': ['groq/llama-3.1-8b-instant', 'groq/llama3-8b-8192', 'groq/mixtral-8x7b-32768'],
     'openai': ['openai/gpt-4o-mini', 'openai/gpt-3.5-turbo'],
     'anthropic': ['anthropic/claude-3-haiku-20240307', 'anthropic/claude-3-5-haiku-latest'],
-    'gemini': ['gemini/gemini-2.0-flash', 'gemini/gemini-1.5-flash-latest', 'gemini/gemini-1.5-flash', 'gemini/gemini-pro'],
+    'gemini': ['gemini/gemini-2.0-flash', 'gemini/gemini-2.0-flash-lite', 'gemini/gemini-1.5-flash-8b'],
 }
 
 DEFAULT_CHAIN = ['groq/llama-3.1-8b-instant']
