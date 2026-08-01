@@ -1,38 +1,35 @@
 import React, { useState } from 'react';
-import { KeyRound, Sparkles, ShieldCheck, ArrowRight, Globe } from 'lucide-react';
+import { KeyRound, Sparkles, ShieldCheck, ArrowRight, Globe, Zap } from 'lucide-react';
 
 interface OnboardingModalProps {
-  onSaveKey: (key: string, provider: string, model: string) => void;
+  onSaveKey: (key: string, provider: string) => void;
   onStartTrial: () => void;
 }
 
-const PROVIDERS = [
-  { id: 'groq', name: 'Groq', defaultModel: 'llama-3.1-8b-instant', placeholder: 'gsk_...' },
-  { id: 'openai', name: 'OpenAI', defaultModel: 'gpt-4o-mini', placeholder: 'sk-proj-...' },
-  { id: 'anthropic', name: 'Anthropic', defaultModel: 'claude-3-haiku-20240307', placeholder: 'sk-ant-...' },
-  { id: 'gemini', name: 'Google Gemini', defaultModel: 'gemini-1.5-flash-latest', placeholder: 'AIza...' },
-];
+// Auto-detect provider from API key prefix
+function detectProvider(key: string): { id: string; name: string } | null {
+  const trimmed = key.trim();
+  if (trimmed.startsWith('gsk_')) return { id: 'groq', name: 'Groq' };
+  if (trimmed.startsWith('sk-ant-')) return { id: 'anthropic', name: 'Anthropic' };
+  if (trimmed.startsWith('sk-')) return { id: 'openai', name: 'OpenAI' };
+  if (trimmed.startsWith('AIza')) return { id: 'gemini', name: 'Google Gemini' };
+  return null;
+}
 
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTrial }) => {
-  const [providerId, setProviderId] = useState('groq');
   const [inputKey, setInputKey] = useState('');
-  const [inputModel, setInputModel] = useState(PROVIDERS[0].defaultModel);
+  const [error, setError] = useState('');
 
-  const selectedProvider = PROVIDERS.find(p => p.id === providerId) || PROVIDERS[0];
-
-  const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newId = e.target.value;
-    setProviderId(newId);
-    const newProvider = PROVIDERS.find(p => p.id === newId);
-    if (newProvider) {
-      setInputModel(newProvider.defaultModel);
-    }
-  };
+  const detected = detectProvider(inputKey);
 
   const handleConnect = () => {
-    if (inputKey.trim() && inputModel.trim()) {
-      onSaveKey(inputKey.trim(), selectedProvider.id, inputModel.trim());
+    if (!inputKey.trim()) return;
+    if (!detected) {
+      setError('Could not detect provider. Supported keys: OpenAI (sk-...), Groq (gsk_...), Gemini (AIza...), Anthropic (sk-ant-...)');
+      return;
     }
+    setError('');
+    onSaveKey(inputKey.trim(), detected.id);
   };
 
   return (
@@ -61,7 +58,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               <Globe className="text-accent shrink-0 mt-1" size={24} />
               <div>
                 <h3 className="font-semibold text-text-main">Universal API Support</h3>
-                <p className="text-sm text-text-muted mt-1">Bring your own key! Powered by a dynamic routing engine, this workspace seamlessly supports OpenAI, Google Gemini, Anthropic, and Groq.</p>
+                <p className="text-sm text-text-muted mt-1">Just paste your API key. We auto-detect your provider (OpenAI, Gemini, Anthropic, Groq) and dynamically select the best available model.</p>
               </div>
             </div>
           </div>
@@ -71,45 +68,38 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               <KeyRound size={18} className="text-text-muted" /> Bring Your Own Key
             </h3>
             <p className="text-xs text-text-muted mb-4">
-              Securely enter your API key to connect to your favorite provider. It is stored locally in your browser and never sent to our database.
+              Just paste your API key below. The app will automatically detect your provider and pick the best model. Your key is stored locally in your browser and never sent to our database.
             </p>
             
             <div className="flex flex-col gap-3">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <select 
-                  value={providerId}
-                  onChange={handleProviderChange}
-                  className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-                >
-                  {PROVIDERS.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-                <input 
-                  type="text"
-                  placeholder="Model Name (e.g. gpt-4o)"
-                  value={inputModel}
-                  onChange={(e) => setInputModel(e.target.value)}
-                  className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-                />
-              </div>
-              
               <div className="flex gap-3">
                 <input 
                   type="password"
-                  placeholder={selectedProvider.placeholder}
+                  placeholder="Paste your API key here..."
                   value={inputKey}
-                  onChange={(e) => setInputKey(e.target.value)}
+                  onChange={(e) => { setInputKey(e.target.value); setError(''); }}
                   className="flex-1 bg-bg-panel border border-border rounded-lg px-4 py-2.5 text-sm font-medium text-text-main focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 />
                 <button 
                   onClick={handleConnect}
-                  disabled={!inputKey.trim() || !inputModel.trim()}
+                  disabled={!inputKey.trim()}
                   className="bg-accent text-accent-text font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2"
                 >
                   Connect <ArrowRight size={16} />
                 </button>
               </div>
+              
+              {detected && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Zap size={14} className="text-accent" />
+                  <span className="text-text-muted">Auto-detected:</span>
+                  <span className="font-semibold text-text-main">{detected.name}</span>
+                </div>
+              )}
+              
+              {error && (
+                <p className="text-sm text-red-500">{error}</p>
+              )}
             </div>
           </div>
           
@@ -119,7 +109,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTri
               onClick={onStartTrial}
               className="text-text-main font-semibold hover:text-accent transition-colors underline underline-offset-4"
             >
-              Start 5K Token Free Trial (Groq)
+              Start 5K Token Free Trial
             </button>
           </div>
         </div>

@@ -21,18 +21,15 @@ const ChatPage: React.FC = () => {
   
   const [apiKey, setApiKey] = useState<string | null>(() => localStorage.getItem('groqApiKey'));
   const [aiProvider, setAiProvider] = useState<string | null>(() => localStorage.getItem('aiProvider'));
-  const [aiModel, setAiModel] = useState<string | null>(() => localStorage.getItem('aiModel'));
   const [isTrial, setIsTrial] = useState<boolean>(() => localStorage.getItem('trialMode') === 'true');
   const [showOnboarding, setShowOnboarding] = useState<boolean>(!apiKey && !isTrial);
 
-  const handleSaveKey = (key: string, provider: string, model: string) => {
+  const handleSaveKey = (key: string, provider: string) => {
     localStorage.setItem('groqApiKey', key);
     localStorage.setItem('aiProvider', provider);
-    localStorage.setItem('aiModel', model);
     localStorage.removeItem('trialMode');
     setApiKey(key);
     setAiProvider(provider);
-    setAiModel(model);
     setIsTrial(false);
     setShowOnboarding(false);
   };
@@ -41,10 +38,8 @@ const ChatPage: React.FC = () => {
     localStorage.setItem('trialMode', 'true');
     localStorage.removeItem('groqApiKey');
     localStorage.removeItem('aiProvider');
-    localStorage.removeItem('aiModel');
     setApiKey(null);
     setAiProvider(null);
-    setAiModel(null);
     setIsTrial(true);
     setShowOnboarding(false);
   };
@@ -71,7 +66,6 @@ const ChatPage: React.FC = () => {
         language={language} 
         apiKey={apiKey}
         aiProvider={aiProvider}
-        aiModel={aiModel}
       />
     </div>
   );
