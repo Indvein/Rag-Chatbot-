@@ -11,6 +11,7 @@ import {
   AttachmentTitle,
 } from "./ui/attachment";
 import type { Message } from '../types';
+import { API_BASE_URL } from '../config';
 
 interface SidebarProps {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
@@ -28,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setMessages, totalTokens, language, s
 
   const fetchDocuments = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/documents/');
+      const res = await fetch(`${API_BASE_URL}/api/documents/`);
       if (res.ok) {
         const data = await res.json();
         setDocuments(data);
@@ -57,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setMessages, totalTokens, language, s
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/api/documents/upload', {
+      const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -99,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setMessages, totalTokens, language, s
     setDocuments(docs => docs.filter(d => d.id !== docId));
     
     try {
-      const response = await fetch(`http://localhost:8000/api/documents/${docId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/documents/${docId}`, {
         method: 'DELETE'
       });
       if (!response.ok) {

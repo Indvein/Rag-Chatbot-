@@ -3,6 +3,7 @@ import { Send, User, FileText, Volume2, Square } from 'lucide-react';
 import type { Message } from '../types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { API_BASE_URL } from '../config';
 
 interface ChatAreaProps {
   messages: Message[];
@@ -76,7 +77,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ messages, setMessages, setTotalToke
         if (aiProvider) headers['X-AI-Provider'] = aiProvider;
       }
       
-      const response = await fetch('http://localhost:8000/api/chat/', {
+      const response = await fetch(`${API_BASE_URL}/api/chat/`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ message: userMsg.content, history: history, language: language }),
