@@ -1,0 +1,70 @@
+import os
+from groq import Groq
+from dotenv import load_dotenv
+from typing import List, Dict
+
+load_dotenv()
+
+API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
+
+class LLMService:
+    def __init__(self):
+        self.default_api_key = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
+        self.model = "llama-3.1-8b-instant"
+
+    def generate_answer(self, query: str, context: str, history: List[Dict[str, str]] = None, language: str = "English", api_key: str = None) -> Dict:
+        """
+        Generates an answer using the provided context and conversation history.
+        """
+        client_key = api_key if api_key else self.default_api_key
+        if not client_key:
+            return {"answer": "No API Key provided or configured on the server.", "tokens_used": 0}
+            
+        client = Groq(api_key=client_key)
+        
+        if history is None:
+            history = []
+            
+        system_prompt = f"""
+You are an expert AI assistant analyzing uploaded documents. 
+The following context contains extracted parts of the user's PDF document(s). 
+Answer the user's question using this context. 
+If they ask for a summary of the document, provide a broad, intelligent summary using the provided context chunks.
+If the context doesn't contain the answer to a specific factual question, politely say that you don't have that information.
+
+CRITICAL INSTRUCTION: You MUST translate and provide your final answer completely in {language}. 
+If the requested language is 'Hinglish', write the answer using casual Hindi vocabulary but written entirely in the English alphabet (e.g., "Yeh document policy ke baare mein batata hai...").
+If the requested language is 'Hindi', write the answer entirely in the Devanagari script.
+
+Context:
+{context}
+"""
+        
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        # Add conversation history (up to last 5 messages to save context window)
+        for msg in history[-5:]:
+            # Map frontend roles to Groq roles
+            role = "assistant" if msg.get("role") == "assistant" else "user"
+            messages.append({"role": role, "content": msg.get("content")})
+            
+        # Add the current question
+        messages.append({"role": "user", "content": query})
+
+        try:
+            chat_completion = client.chat.completions.create(
+                messages=messages,
+                model=self.model,
+                max_tokens=512,
+            )
+            return {
+                "answer": chat_completion.choices[0].message.content,
+                "tokens_used": chat_completion.usage.total_tokens if chat_completion.usage else 0
+            }
+        except Exception as e:
+            return {
+                "answer": f"Error communicating with AI: {str(e)}",
+                "tokens_used": 0
+            }
+
+llm_service = LLMService()

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@theme {
+  --font-sans: "Geist Variable", sans-serif;
+  
+  /* Calm document workspace theme */
+  --color-bg-main: #F7F6F2;
+  --color-bg-panel: #FFFFFF;
+  --color-bg-soft: #EFEDE7;
+  --color-border: #DED8CC;
+  --color-text-main: #25231F;
+  --color-text-muted: #746F66;
+  --color-accent: #5F7161;
+  --color-accent-hover: #4E604F;
+  --color-accent-soft: #E5EBE3;
+  --color-accent-text: #FFFFFF;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-fade {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
