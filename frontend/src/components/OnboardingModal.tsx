@@ -10,7 +10,7 @@ const PROVIDERS = [
   { id: 'groq', name: 'Groq', defaultModel: 'llama-3.1-8b-instant', placeholder: 'gsk_...' },
   { id: 'openai', name: 'OpenAI', defaultModel: 'gpt-4o-mini', placeholder: 'sk-proj-...' },
   { id: 'anthropic', name: 'Anthropic', defaultModel: 'claude-3-haiku-20240307', placeholder: 'sk-ant-...' },
-  { id: 'gemini', name: 'Google Gemini', defaultModel: 'gemini-1.5-flash', placeholder: 'AIza...' },
+  { id: 'gemini', name: 'Google Gemini', defaultModel: 'gemini-1.5-flash-latest', placeholder: 'AIza...' },
 ];
 
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ onSaveKey, onStartTrial }) => {
